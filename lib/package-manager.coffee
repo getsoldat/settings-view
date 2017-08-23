@@ -39,15 +39,15 @@ class PackageManager
 
   setProxyServers: (callback) =>
     session = soldat.getCurrentWindow().webContents.session
-    session.resolveProxy 'http://atom.io', (httpProxy) =>
+    session.resolveProxy 'http://soldat.tv', (httpProxy) =>
       @applyProxyToEnv('http_proxy', httpProxy)
-      session.resolveProxy 'https://atom.io', (httpsProxy) =>
+      session.resolveProxy 'https://soldat.tv', (httpsProxy) =>
         @applyProxyToEnv('https_proxy', httpsProxy)
         callback()
 
   setProxyServersAsync: (callback) =>
-    httpProxyPromise = soldat.resolveProxy('http://atom.io').then((proxy) => @applyProxyToEnv('http_proxy', proxy))
-    httpsProxyPromise = soldat.resolveProxy('https://atom.io').then((proxy) => @applyProxyToEnv('https_proxy', proxy))
+    httpProxyPromise = soldat.resolveProxy('http://soldat.tv').then((proxy) => @applyProxyToEnv('http_proxy', proxy))
+    httpsProxyPromise = soldat.resolveProxy('https://soldat.tv').then((proxy) => @applyProxyToEnv('https_proxy', proxy))
     Promise.all([httpProxyPromise, httpsProxyPromise]).then(callback)
 
   applyProxyToEnv: (envName, proxy) ->

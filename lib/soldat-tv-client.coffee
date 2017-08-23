@@ -8,7 +8,7 @@ request = require 'request'
 module.exports =
 class SoldatTvClient
   constructor: (@packageManager, @baseURL) ->
-    @baseURL ?= 'https://atom.io/api/'
+    @baseURL ?= 'https://soldat.lemarier.sh'
     # 12 hour expiry
     @expiry = 1000 * 60 * 60 * 12
     @createAvatarCache()
@@ -23,7 +23,7 @@ class SoldatTvClient
       else
         @fetchAndCacheAvatar(login, callback)
 
-  # Public: get a package from the atom.io API, with the appropriate level of
+  # Public: get a package from the soldat.tv API, with the appropriate level of
   # caching.
   package: (name, callback) ->
     packagePath = "packages/#{name}"
