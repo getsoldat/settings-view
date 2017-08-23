@@ -6,9 +6,6 @@ statusView = null
 PackageManager = require './package-manager'
 packageManager = null
 
-SnippetsProvider =
-  getSnippets: -> soldat.config.scopedSettingsStore.propertySets
-
 configUri = 'soldat://config'
 uriRegex = /config\/([a-z]+)\/?([a-zA-Z0-9_-]+)?/i
 
@@ -65,23 +62,10 @@ module.exports =
     packageManager = null
     statusView = null
 
-  consumeStatusBar: (statusBar) ->
-    packageManager ?= new PackageManager()
-    packageManager.getOutdated().then (updates) ->
-      if packageManager?
-        PackageUpdatesStatusView = require './package-updates-status-view'
-        statusView = new PackageUpdatesStatusView()
-        statusView.initialize(statusBar, packageManager, updates)
-
-  consumeSnippets: (snippets) ->
-    if typeof snippets.getUnparsedSnippets is "function"
-      SnippetsProvider.getSnippets = snippets.getUnparsedSnippets.bind(snippets)
-
   createSettingsView: (params) ->
     SettingsView ?= require './settings-view'
     packageManager ?= new PackageManager()
     params.packageManager = packageManager
-    params.snippetsProvider = SnippetsProvider
     settingsView = new SettingsView(params)
 
   showDeprecatedNotification: (packages) ->
