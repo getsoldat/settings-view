@@ -6,7 +6,7 @@ describe "PackageManager", ->
   [packageManager] = []
 
   beforeEach ->
-    spyOn(soldat.packages, 'getApmPath').andReturn('/an/invalid/apm/command/to/run')
+    spyOn(soldat.packages, 'getRecruePath').andReturn('/an/invalid/apm/command/to/run')
     packageManager = new PackageManager()
 
   it "handle errors spawning apm", ->
