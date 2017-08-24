@@ -50,7 +50,7 @@ class SoldatTvClient
         @getFeatured(true, callback)
 
   getFeatured: (loadThemes, callback) ->
-    # apm already does this, might as well use it instead of request i guess? The
+    # recrue already does this, might as well use it instead of request i guess? The
     # downside is that I need to repeat caching logic here.
     @packageManager.getFeatured(loadThemes)
       .then (packages) =>

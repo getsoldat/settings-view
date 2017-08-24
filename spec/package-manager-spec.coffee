@@ -6,10 +6,10 @@ describe "PackageManager", ->
   [packageManager] = []
 
   beforeEach ->
-    spyOn(soldat.packages, 'getRecruePath').andReturn('/an/invalid/apm/command/to/run')
+    spyOn(soldat.packages, 'getRecruePath').andReturn('/an/invalid/recrue/command/to/run')
     packageManager = new PackageManager()
 
-  it "handle errors spawning apm", ->
+  it "handle errors spawning recrue", ->
     noSuchCommandError = if process.platform is 'win32' then ' cannot find the path ' else 'ENOENT'
     waitsForPromise shouldReject: true, -> packageManager.search('test')
     waitsForPromise shouldReject: true, -> packageManager.getInstalled()
@@ -227,7 +227,7 @@ describe "PackageManager", ->
         onWillThrowError: ->
 
       packageManager.loadOutdated false, ->
-      expect(packageManager.apmCache.loadOutdated.value).toMatch([{"name": "boop"}])
+      expect(packageManager.recrueCache.loadOutdated.value).toMatch([{"name": "boop"}])
 
       packageManager.loadOutdated false, ->
       expect(packageManager.runCommand.calls.length).toBe(1)
@@ -246,7 +246,7 @@ describe "PackageManager", ->
       expect(packageManager.runCommand.calls.length).toBe(2)
 
     it "expires results after a package updated/installed", ->
-      packageManager.apmCache.loadOutdated =
+      packageManager.recrueCache.loadOutdated =
         value: ['hi']
         expiry: Date.now() + 999999999
 
@@ -275,7 +275,7 @@ describe "PackageManager", ->
       expect(packageManager.runCommand.calls.length).toBe(4)
 
     it "expires results if it is called with clearCache set to true", ->
-      packageManager.apmCache.loadOutdated =
+      packageManager.recrueCache.loadOutdated =
         value: ['hi']
         expiry: Date.now() + 999999999
 
@@ -285,7 +285,7 @@ describe "PackageManager", ->
 
       packageManager.loadOutdated true, ->
       expect(packageManager.runCommand.calls.length).toBe(1)
-      expect(packageManager.apmCache.loadOutdated.value).toEqual [{"name": "boop"}]
+      expect(packageManager.recrueCache.loadOutdated.value).toEqual [{"name": "boop"}]
 
     describe "when there is a version pinned package", ->
       beforeEach ->
@@ -297,7 +297,7 @@ describe "PackageManager", ->
           onWillThrowError: ->
 
         packageManager.loadOutdated false, ->
-        expect(packageManager.apmCache.loadOutdated.value).toMatch([{"name": "boop"}])
+        expect(packageManager.recrueCache.loadOutdated.value).toMatch([{"name": "boop"}])
 
         packageManager.loadOutdated false, ->
         expect(packageManager.runCommand.calls.length).toBe(1)
@@ -316,7 +316,7 @@ describe "PackageManager", ->
         expect(packageManager.runCommand.calls.length).toBe(2)
 
       it "expires results after a package updated/installed", ->
-        packageManager.apmCache.loadOutdated =
+        packageManager.recrueCache.loadOutdated =
           value: ['hi']
           expiry: Date.now() + 999999999
 
@@ -345,7 +345,7 @@ describe "PackageManager", ->
         expect(packageManager.runCommand.calls.length).toBe(4)
 
       it "expires results if it is called with clearCache set to true", ->
-        packageManager.apmCache.loadOutdated =
+        packageManager.recrueCache.loadOutdated =
           value: ['hi']
           expiry: Date.now() + 999999999
 
@@ -355,4 +355,4 @@ describe "PackageManager", ->
 
         packageManager.loadOutdated true, ->
         expect(packageManager.runCommand.calls.length).toBe(1)
-        expect(packageManager.apmCache.loadOutdated.value).toEqual [{"name": "boop"}]
+        expect(packageManager.recrueCache.loadOutdated.value).toEqual [{"name": "boop"}]

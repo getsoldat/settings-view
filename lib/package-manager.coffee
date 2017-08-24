@@ -11,7 +11,7 @@ class PackageManager
 
   constructor: ->
     @packagePromises = []
-    @apmCache =
+    @recrueCache =
       loadOutdated:
         value: null
         expiry: 0
@@ -59,7 +59,7 @@ class PackageManager
     return
 
   runCommand: (args, callback) ->
-    command = soldat.packages.getApmPath()
+    command = soldat.packages.getRecruePath()
     outputLines = []
     stdout = (lines) -> outputLines.push(lines)
     errorLines = []
@@ -69,7 +69,7 @@ class PackageManager
 
     args.push('--no-color')
 
-    if soldat.config.get('core.useProxySettingsWhenCallingApm')
+    if soldat.config.get('core.useProxySettingsWhenCallingRecrue')
       bufferedProcess = new BufferedProcess({command, args, stdout, stderr, exit, autoStart: false})
       if soldat.resolveProxy?
         @setProxyServersAsync -> bufferedProcess.start()
@@ -82,7 +82,7 @@ class PackageManager
   loadInstalled: (callback) ->
     args = ['ls', '--json']
     errorMessage = 'Fetching local packages failed.'
-    apmProcess = @runCommand args, (code, stdout, stderr) ->
+    recrueProcess = @runCommand args, (code, stdout, stderr) ->
       if code is 0
         try
           packages = JSON.parse(stdout) ? []
@@ -96,7 +96,7 @@ class PackageManager
         error.stderr = stderr
         callback(error)
 
-    handleProcessErrors(apmProcess, errorMessage, callback)
+    handleProcessErrors(recrueProcess, errorMessage, callback)
 
   loadFeatured: (loadThemes, callback) ->
     unless callback
@@ -109,7 +109,7 @@ class PackageManager
     args.push('--compatible', version) if semver.valid(version)
     errorMessage = 'Fetching featured packages failed.'
 
-    apmProcess = @runCommand args, (code, stdout, stderr) ->
+    recrueProcess = @runCommand args, (code, stdout, stderr) ->
       if code is 0
         try
           packages = JSON.parse(stdout) ? []
@@ -124,21 +124,21 @@ class PackageManager
         error.stderr = stderr
         callback(error)
 
-    handleProcessErrors(apmProcess, errorMessage, callback)
+    handleProcessErrors(recrueProcess, errorMessage, callback)
 
   loadOutdated: (clearCache, callback) ->
     if clearCache
       @clearOutdatedCache()
     # Short circuit if we have cached data.
-    else if @apmCache.loadOutdated.value and @apmCache.loadOutdated.expiry > Date.now()
-      return callback(null, @apmCache.loadOutdated.value)
+    else if @recrueCache.loadOutdated.value and @recrueCache.loadOutdated.expiry > Date.now()
+      return callback(null, @recrueCache.loadOutdated.value)
 
     args = ['outdated', '--json']
     version = soldat.getVersion()
     args.push('--compatible', version) if semver.valid(version)
     errorMessage = 'Fetching outdated packages and themes failed.'
 
-    apmProcess = @runCommand args, (code, stdout, stderr) =>
+    recrueProcess = @runCommand args, (code, stdout, stderr) =>
       if code is 0
         try
           packages = JSON.parse(stdout) ? []
@@ -148,7 +148,7 @@ class PackageManager
 
         updatablePackages = (pack for pack in packages when not @getVersionPinnedPackages().includes(pack?.name))
 
-        @apmCache.loadOutdated =
+        @recrueCache.loadOutdated =
           value: updatablePackages
           expiry: Date.now() + @CACHE_EXPIRY
 
@@ -162,13 +162,13 @@ class PackageManager
         error.stderr = stderr
         callback(error)
 
-    handleProcessErrors(apmProcess, errorMessage, callback)
+    handleProcessErrors(recrueProcess, errorMessage, callback)
 
   getVersionPinnedPackages: ->
     soldat.config.get('core.versionPinnedPackages') ? []
 
   clearOutdatedCache: ->
-    @apmCache.loadOutdated =
+    @recrueCache.loadOutdated =
       value: null
       expiry: 0
 
@@ -176,7 +176,7 @@ class PackageManager
     args = ['view', packageName, '--json']
     errorMessage = "Fetching package '#{packageName}' failed."
 
-    apmProcess = @runCommand args, (code, stdout, stderr) ->
+    recrueProcess = @runCommand args, (code, stdout, stderr) ->
       if code is 0
         try
           packages = JSON.parse(stdout) ? []
@@ -191,13 +191,13 @@ class PackageManager
         error.stderr = stderr
         callback(error)
 
-    handleProcessErrors(apmProcess, errorMessage, callback)
+    handleProcessErrors(recrueProcess, errorMessage, callback)
 
   loadCompatiblePackageVersion: (packageName, callback) ->
     args = ['view', packageName, '--json', '--compatible', @normalizeVersion(soldat.getVersion())]
     errorMessage = "Fetching package '#{packageName}' failed."
 
-    apmProcess = @runCommand args, (code, stdout, stderr) ->
+    recrueProcess = @runCommand args, (code, stdout, stderr) ->
       if code is 0
         try
           packages = JSON.parse(stdout) ? []
@@ -212,7 +212,7 @@ class PackageManager
         error.stderr = stderr
         callback(error)
 
-    handleProcessErrors(apmProcess, errorMessage, callback)
+    handleProcessErrors(recrueProcess, errorMessage, callback)
 
   getInstalled: ->
     new Promise (resolve, reject) =>
@@ -264,7 +264,7 @@ class PackageManager
         args.push '--packages'
       errorMessage = "Searching for \u201C#{query}\u201D failed."
 
-      apmProcess = @runCommand args, (code, stdout, stderr) ->
+      recrueProcess = @runCommand args, (code, stdout, stderr) ->
         if code is 0
           try
             packages = JSON.parse(stdout) ? []
@@ -282,11 +282,11 @@ class PackageManager
           error.stderr = stderr
           reject(error)
 
-      handleProcessErrors apmProcess, errorMessage, (error) ->
+      handleProcessErrors recrueProcess, errorMessage, (error) ->
         reject(error)
 
   update: (pack, newVersion, callback) ->
-    {name, theme, apmInstallSource} = pack
+    {name, theme, recrueInstallSource} = pack
 
     errorMessage = if newVersion
       "Updating to \u201C#{name}@#{newVersion}\u201D failed."
@@ -297,8 +297,8 @@ class PackageManager
       @emitPackageEvent 'update-failed', pack, error
       callback?(error)
 
-    if apmInstallSource?.type is 'git'
-      args = ['install', apmInstallSource.source]
+    if recrueInstallSource?.type is 'git'
+      args = ['install', recrueInstallSource.source]
     else
       args = ['install', "#{name}@#{newVersion}"]
 
@@ -314,8 +314,8 @@ class PackageManager
         onError(error)
 
     @emitPackageEvent 'updating', pack
-    apmProcess = @runCommand(args, exit)
-    handleProcessErrors(apmProcess, errorMessage, onError)
+    recrueProcess = @runCommand(args, exit)
+    handleProcessErrors(recrueProcess, errorMessage, onError)
 
   unload: (name) ->
     if soldat.packages.isPackageLoaded(name)
@@ -345,7 +345,7 @@ class PackageManager
           pack = _.extend({}, pack, packageInfo.metadata)
           name = pack.name
         catch err
-          # using old apm without --json support
+          # using old recrue without --json support
         @clearOutdatedCache()
         if activateOnSuccess
           soldat.packages.activatePackage(name)
@@ -362,8 +362,8 @@ class PackageManager
         onError(error)
 
     @emitPackageEvent('installing', pack)
-    apmProcess = @runCommand(args, exit)
-    handleProcessErrors(apmProcess, errorMessage, onError)
+    recrueProcess = @runCommand(args, exit)
+    handleProcessErrors(recrueProcess, errorMessage, onError)
 
   uninstall: (pack, callback) ->
     {name} = pack
@@ -376,7 +376,7 @@ class PackageManager
       callback?(error)
 
     @emitPackageEvent('uninstalling', pack)
-    apmProcess = @runCommand ['uninstall', '--hard', name], (code, stdout, stderr) =>
+    recrueProcess = @runCommand ['uninstall', '--hard', name], (code, stdout, stderr) =>
       if code is 0
         @clearOutdatedCache()
         @unload(name)
@@ -389,7 +389,7 @@ class PackageManager
         error.stderr = stderr
         onError(error)
 
-    handleProcessErrors(apmProcess, errorMessage, onError)
+    handleProcessErrors(recrueProcess, errorMessage, onError)
 
   installAlternative: (pack, alternativePackageName, callback) ->
     eventArg = {pack, alternative: alternativePackageName}
@@ -434,13 +434,13 @@ class PackageManager
 
   checkNativeBuildTools: ->
     new Promise (resolve, reject) =>
-      apmProcess = @runCommand ['install', '--check'], (code, stdout, stderr) ->
+      recrueProcess = @runCommand ['install', '--check'], (code, stdout, stderr) ->
         if code is 0
           resolve()
         else
           reject(new Error())
 
-      apmProcess.onWillThrowError ({error, handle}) ->
+      recrueProcess.onWillThrowError ({error, handle}) ->
         handle()
         reject(error)
 
@@ -480,7 +480,7 @@ createProcessError = (message, processError) ->
   error.stderr = processError.message
   error
 
-handleProcessErrors = (apmProcess, message, callback) ->
-  apmProcess.onWillThrowError ({error, handle}) ->
+handleProcessErrors = (recrueProcess, message, callback) ->
+  recrueProcess.onWillThrowError ({error, handle}) ->
     handle()
     callback(createProcessError(message, error))
