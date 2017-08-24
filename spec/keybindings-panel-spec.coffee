@@ -45,25 +45,6 @@ describe "KeybindingsPanel", ->
     expect(row.querySelector('.selector').textContent).toBe '.editor, .platform-test'
 
   describe "when a keybinding is copied", ->
-    describe "when the keybinding file ends in .cson", ->
-      it "writes a CSON snippet to the clipboard", ->
-        spyOn(soldat.keymaps, 'getUserKeymapPath').andReturn 'keymap.cson'
-        panel.element.querySelector('.copy-icon').click()
-        expect(soldat.clipboard.read()).toBe """
-          '.editor, .platform-test':
-            'ctrl-a': 'core:select-all'
-        """
-
-    describe "when the keybinding file ends in .json", ->
-      it "writes a JSON snippet to the clipboard", ->
-        spyOn(soldat.keymaps, 'getUserKeymapPath').andReturn 'keymap.json'
-        panel.element.querySelector('.copy-icon').click()
-        expect(soldat.clipboard.read()).toBe """
-          ".editor, .platform-test": {
-            "ctrl-a": "core:select-all"
-          }
-        """
-
     describe "when the keybinding contains backslashes", ->
       it "escapes the backslashes before copying", ->
         spyOn(soldat.keymaps, 'getUserKeymapPath').andReturn 'keymap.cson'

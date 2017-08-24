@@ -26,26 +26,26 @@ describe "PackageDetailView", ->
       packageData = require(path.join(__dirname, 'fixtures', 'package-with-readme', 'package.json'))
       packageData.readme = fs.readFileSync(path.join(__dirname, 'fixtures', 'package-with-readme', 'README.md'), 'utf8')
       cb(null, packageData)
-    view = new PackageDetailView({name: 'package-with-readme'}, new SettingsView(), packageManager, SnippetsProvider)
+    view = new PackageDetailView({name: 'package-with-readme'}, new SettingsView(), packageManager)
     view.beforeShow(opts)
 
   it "renders a package when provided in `initialize`", ->
     soldat.packages.loadPackage(path.join(__dirname, 'fixtures', 'package-with-config'))
     pack = soldat.packages.getLoadedPackage('package-with-config')
-    view = new PackageDetailView(pack, new SettingsView(), packageManager, SnippetsProvider)
+    view = new PackageDetailView(pack, new SettingsView(), packageManager)
 
     # Perhaps there are more things to assert here.
     expect(view.refs.title.textContent).toBe('Package With Config')
 
-  it "does not call the atom.io api for package metadata when present", ->
+  it "does not call the soldat.tv api for package metadata when present", ->
     packageManager.client = createClientSpy()
-    view = new PackageDetailView({name: 'package-with-config'}, new SettingsView(), packageManager, SnippetsProvider)
+    view = new PackageDetailView({name: 'package-with-config'}, new SettingsView(), packageManager)
 
     # PackageCard is a subview, and it calls SoldatTvClient::package once to load
     # metadata from the cache.
     expect(packageManager.client.package.callCount).toBe(1)
 
-  it "shows a loading message and calls out to atom.io when package metadata is missing", ->
+  it "shows a loading message and calls out to soldat.tv when package metadata is missing", ->
     loadPackageFromRemote()
     expect(view.refs.loadingMessage).not.toBe(null)
     expect(view.refs.loadingMessage.classList.contains('hidden')).not.toBe(true)
@@ -80,7 +80,7 @@ describe "PackageDetailView", ->
     expect(view.refs.loadingMessage.classList.contains('hidden')).toBe(true)
     expect(view.element.querySelectorAll('.package-card').length).toBe(0)
 
-  it "renders the README successfully after a call to the atom.io api", ->
+  it "renders the README successfully after a call to the soldat.tv api", ->
     loadPackageFromRemote()
     expect(view.packageCard).toBeDefined()
     expect(view.packageCard.refs.packageName.textContent).toBe('package-with-readme')

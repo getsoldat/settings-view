@@ -76,7 +76,7 @@ describe "PackageCard", ->
     jasmine.attachToDOM(card.element)
 
     expect(card.refs.loginLink.textContent).toBe(authorName)
-    expect(card.refs.loginLink.href).toBe("https://atom.io/users/#{authorName}")
+    expect(card.refs.loginLink.href).toBe("https://soldat.tv/users/#{authorName}")
 
   describe "when the package is not installed", ->
     it "shows the settings, uninstall, and disable buttons", ->

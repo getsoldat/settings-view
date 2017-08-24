@@ -35,41 +35,6 @@ describe "InstalledPackageView", ->
 
       expect(settingsPanels[2]).toBeUndefined()
 
-  it "displays the snippets registered by the package", ->
-    snippetsTable = null
-    snippetsModule = null
-
-    waitsForPromise ->
-      soldat.packages.activatePackage('snippets').then (p) ->
-        snippetsModule = p.mainModule
-        return unless snippetsModule.provideSnippets().getUnparsedSnippets?
-
-        SnippetsProvider =
-          getSnippets: -> snippetsModule.provideSnippets().getUnparsedSnippets()
-
-    waitsForPromise ->
-      soldat.packages.activatePackage(path.join(__dirname, 'fixtures', 'language-test'))
-
-    waitsFor 'snippets to load', (done) ->
-      snippetsModule.onDidLoadSnippets(done)
-
-    runs ->
-      pack = soldat.packages.getActivePackage('language-test')
-      view = new PackageDetailView(pack, new SettingsView(), new PackageManager(), SnippetsProvider)
-      snippetsTable = view.element.querySelector('.package-snippets-table tbody')
-
-    waitsFor 'snippets table children to contain 2 items', ->
-      snippetsTable.children.length >= 2
-
-    runs ->
-      expect(snippetsTable.querySelector('tr:nth-child(1) td:nth-child(1)').textContent).toBe 'b'
-      expect(snippetsTable.querySelector('tr:nth-child(1) td:nth-child(2)').textContent).toBe 'BAR'
-      expect(snippetsTable.querySelector('tr:nth-child(1) td:nth-child(3)').textContent).toBe 'bar?'
-
-      expect(snippetsTable.querySelector('tr:nth-child(2) td:nth-child(1)').textContent).toBe 'f'
-      expect(snippetsTable.querySelector('tr:nth-child(2) td:nth-child(2)').textContent).toBe 'FOO'
-      expect(snippetsTable.querySelector('tr:nth-child(2) td:nth-child(3)').textContent).toBe 'foo!'
-
   it "does not display keybindings from other platforms", ->
     keybindingsTable = null
 
@@ -118,25 +83,6 @@ describe "InstalledPackageView", ->
       runs ->
         pack = soldat.packages.getActivePackage('language-test')
         card = new PackageKeymapView(pack)
-
-    describe "when the keybinding file ends in .cson", ->
-      it "writes a CSON snippet to the clipboard", ->
-        spyOn(soldat.keymaps, 'getUserKeymapPath').andReturn 'keymap.cson'
-        card.element.querySelector('.copy-icon').click()
-        expect(soldat.clipboard.read()).toBe """
-          'test':
-            'cmd-g': 'language-test:run'
-        """
-
-    describe "when the keybinding file ends in .json", ->
-      it "writes a JSON snippet to the clipboard", ->
-        spyOn(soldat.keymaps, 'getUserKeymapPath').andReturn 'keymap.json'
-        card.element.querySelector('.copy-icon').click()
-        expect(soldat.clipboard.read()).toBe """
-          "test": {
-            "cmd-g": "language-test:run"
-          }
-        """
 
   describe "when the package is active", ->
     it "displays the correct enablement state", ->
@@ -188,7 +134,7 @@ describe "InstalledPackageView", ->
 
         expect(soldat.config.get('package-with-config.setting')).toBe 'something'
 
-  describe "when the package was not installed from atom.io", ->
+  describe "when the package was not installed from soldat.tv", ->
     normalizePackageDataReadmeError = 'ERROR: No README data found!'
 
     it "still displays the Readme", ->
