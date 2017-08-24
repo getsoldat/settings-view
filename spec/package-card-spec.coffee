@@ -111,7 +111,7 @@ describe "PackageCard", ->
           name: packageName
           version: '0.1.0'
           engines:
-            soldat: '>0.50.0'
+            soldat: '>0.0.0'
 
         callback(null, pack)
 
@@ -121,7 +121,7 @@ describe "PackageCard", ->
         name: 'test-package'
         version: '0.1.0'
         engines:
-          soldat: '>0.50.0'
+          soldat: '>0.0.0'
       }, new SettingsView(), packageManager
 
       # In that case there's no need to make a request to get all the versions
@@ -135,7 +135,7 @@ describe "PackageCard", ->
         name: 'test-package'
         version: '0.1.0'
         engines:
-          soldat: '>0.50.0'
+          soldat: '>0.0.0'
       })
 
     it "can be installed with a previous version whose engine match the current soldat version", ->
@@ -145,7 +145,7 @@ describe "PackageCard", ->
           name: packageName
           version: '0.0.1'
           engines:
-            soldat: '>0.0.1'
+            soldat: '>0.0.0'
 
         callback(null, pack)
 
@@ -169,7 +169,7 @@ describe "PackageCard", ->
         name: 'test-package'
         version: '0.0.1'
         engines:
-          soldat: '>0.50.0'
+          soldat: '>0.0.0'
       })
 
     it "can't be installed if there is no version compatible with the current soldat version", ->
