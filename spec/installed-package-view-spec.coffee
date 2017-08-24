@@ -89,11 +89,11 @@ describe "InstalledPackageView", ->
       packageCard = null
 
       waitsForPromise ->
-        soldat.packages.activatePackage('status-bar')
+        soldat.packages.activatePackage('welcome')
 
       runs ->
-        expect(soldat.packages.isPackageActive('status-bar')).toBe(true)
-        pack = soldat.packages.getLoadedPackage('status-bar')
+        expect(soldat.packages.isPackageActive('welcome')).toBe(true)
+        pack = soldat.packages.getLoadedPackage('welcome')
         view = new PackageDetailView(pack, new SettingsView(), new PackageManager(), SnippetsProvider)
         packageCard = view.element.querySelector('.package-card')
 
@@ -101,23 +101,23 @@ describe "InstalledPackageView", ->
         # Trigger observeDisabledPackages() here
         # because it is not default in specs
         soldat.packages.observeDisabledPackages()
-        soldat.packages.disablePackage('status-bar')
-        expect(soldat.packages.isPackageDisabled('status-bar')).toBe(true)
+        soldat.packages.disablePackage('welcome')
+        expect(soldat.packages.isPackageDisabled('welcome')).toBe(true)
         expect(packageCard.classList.contains('disabled')).toBe(true)
 
   describe "when the package is not active", ->
     it "displays the correct enablement state", ->
-      soldat.packages.loadPackage('status-bar')
-      expect(soldat.packages.isPackageActive('status-bar')).toBe(false)
-      pack = soldat.packages.getLoadedPackage('status-bar')
+      soldat.packages.loadPackage('welcome')
+      expect(soldat.packages.isPackageActive('welcome')).toBe(false)
+      pack = soldat.packages.getLoadedPackage('welcome')
       view = new PackageDetailView(pack, new SettingsView(), new PackageManager(), SnippetsProvider)
       packageCard = view.element.querySelector('.package-card')
 
       # Trigger observeDisabledPackages() here
       # because it is not default in specs
       soldat.packages.observeDisabledPackages()
-      soldat.packages.disablePackage('status-bar')
-      expect(soldat.packages.isPackageDisabled('status-bar')).toBe(true)
+      soldat.packages.disablePackage('welcome')
+      expect(soldat.packages.isPackageDisabled('welcome')).toBe(true)
       expect(packageCard.classList.contains('disabled')).toBe(true)
 
     it "still loads the config schema for the package", ->

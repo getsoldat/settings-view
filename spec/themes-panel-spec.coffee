@@ -36,41 +36,6 @@ describe "ThemesPanel", ->
     soldat.packages.unloadPackage('a-theme') if soldat.packages.isPackageLoaded('a-theme')
     soldat.themes.deactivateThemes()
 
-  it "selects the active syntax and UI themes", ->
-    expect(panel.refs.uiMenu.value).toBe 'soldat-dark-ui'
-    expect(panel.refs.syntaxMenu.value).toBe 'soldat-dark-syntax'
-
-  describe "when a UI theme is selected", ->
-    it "updates the 'core.themes' config key with the selected UI theme", ->
-      for child in panel.refs.uiMenu.children
-        child.selected = child.value is 'soldat-light-ui'
-        child.dispatchEvent(new Event('change', {bubbles: true}))
-      expect(soldat.config.get('core.themes')).toEqual ['soldat-light-ui', 'soldat-dark-syntax']
-
-  describe "when a syntax theme is selected", ->
-    it "updates the 'core.themes' config key with the selected syntax theme", ->
-      for child in panel.refs.syntaxMenu.children
-        child.selected = child.value is 'soldat-light-syntax'
-        child.dispatchEvent(new Event('change', {bubbles: true}))
-      expect(soldat.config.get('core.themes')).toEqual ['soldat-dark-ui', 'soldat-light-syntax']
-
-  describe "when the 'core.config' key changes", ->
-    it "refreshes the theme menus", ->
-      reloadedHandler.reset()
-      soldat.config.set('core.themes', ['soldat-light-ui', 'soldat-light-syntax'])
-
-      waitsFor ->
-        reloadedHandler.callCount is 1
-
-      runs ->
-        expect(panel.refs.uiMenu.value).toBe 'soldat-light-ui'
-        expect(panel.refs.syntaxMenu.value).toBe 'soldat-light-syntax'
-
-  xdescribe "when the themes panel is navigated to", ->
-    xit "focuses the search filter", ->
-      settingsView.showPanel('Themes')
-      expect(panel.refs.filterEditor.element).toHaveFocus()
-
   describe "theme lists", ->
     [installed] = []
     beforeEach ->
