@@ -47,20 +47,20 @@ describe "PackageCard", ->
 
   it "removes the uninstall button if a package has is a bundled package", ->
     setPackageStatusSpies {installed: true, disabled: false, hasSettings: true}
-    card = new PackageCard {name: 'find-and-replace'}, new SettingsView(), packageManager
+    card = new PackageCard {name: 'welcome'}, new SettingsView(), packageManager
     jasmine.attachToDOM(card.element)
     expect(card.refs.uninstallButton).not.toBeVisible()
 
   it "displays the new version in the update button", ->
     setPackageStatusSpies {installed: true, disabled: false, hasSettings: true}
-    card = new PackageCard {name: 'find-and-replace', version: '1.0.0', latestVersion: '1.2.0'}, new SettingsView(), packageManager
+    card = new PackageCard {name: 'welcome', version: '1.0.0', latestVersion: '1.2.0'}, new SettingsView(), packageManager
     jasmine.attachToDOM(card.element)
     expect(card.refs.updateButton).toBeVisible()
     expect(card.refs.updateButton.textContent).toContain 'Update to 1.2.0'
 
   it "displays the new version in the update button when the package is disabled", ->
     setPackageStatusSpies {installed: true, disabled: true, hasSettings: true}
-    card = new PackageCard {name: 'find-and-replace', version: '1.0.0', latestVersion: '1.2.0'}, new SettingsView(), packageManager
+    card = new PackageCard {name: 'welcome', version: '1.0.0', latestVersion: '1.2.0'}, new SettingsView(), packageManager
     jasmine.attachToDOM(card.element)
     expect(card.refs.updateButton).toBeVisible()
     expect(card.refs.updateButton.textContent).toContain 'Update to 1.2.0'
@@ -145,7 +145,7 @@ describe "PackageCard", ->
           name: packageName
           version: '0.0.1'
           engines:
-            soldat: '>0.50.0'
+            soldat: '>0.0.1'
 
         callback(null, pack)
 
