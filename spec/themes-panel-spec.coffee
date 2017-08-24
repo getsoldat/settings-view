@@ -11,9 +11,7 @@ describe "ThemesPanel", ->
   settingsView = null
 
   beforeEach ->
-    soldat.packages.loadPackage('soldat-light-ui')
     soldat.packages.loadPackage('soldat-dark-ui')
-    soldat.packages.loadPackage('soldat-light-syntax')
     soldat.packages.loadPackage('soldat-dark-syntax')
     soldat.packages.packageDirPaths.push(path.join(__dirname, 'fixtures'))
     soldat.config.set('core.themes', ['soldat-dark-ui', 'soldat-dark-syntax'])

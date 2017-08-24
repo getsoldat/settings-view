@@ -10,7 +10,7 @@ describe "SettingsView", ->
   packageManager = new PackageManager()
 
   beforeEach ->
-    settingsView = main.createSettingsView({packageManager: packageManage})
+    settingsView = main.createSettingsView({packageManager: packageManager})
     spyOn(settingsView, "initializePanels").andCallThrough()
     window.advanceClock(10000)
     waitsFor ->
